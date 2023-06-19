@@ -3,6 +3,8 @@
 #define INC_STM32F407XX_H_
 
 #include <stdint.h>
+#include <string.h>
+
 
 #define SET_BIT(REG,BIT)		((REG) |= 	(BIT))
 #define CLEAR_BIT(REG,BIT)		((REG) &=~ 	(BIT))
@@ -22,7 +24,7 @@
 
 #define PERIPH_BASE_ADDR			(0X40000000UL)
 #define	APB1_BASE_ADDR				PERIPH_BASE_ADRR
-#define	APB2_BASE_ADDR				(PERIPH_BASE_ADRR+0x10000UL)
+#define	APB2_BASE_ADDR				(PERIPH_BASE_ADDR+0x10000UL)
 #define	AHB1_BASE_ADDR				(PERIPH_BASE_ADDR+0x20000UL)
 #define	AHB2_BASE_ADDR				(PERIPH_BASE_ADRR+0x10000000UL)
 
@@ -95,6 +97,32 @@ typedef struct{
 }GPIO_Typedef_t;
 
 
+typedef struct{
+
+	__IO uint32_t MEMRMP;			//SYSCFG memory remap register (SYSCFG_MEMRMP					Address Offset = 0x00
+	__IO uint32_t PMC;				//SYSCFG peripheral mode configuration register (SYSCFG_PMC		Address Offset = 0x04
+	__IO uint32_t EXTI_CR[4];		//SYSCFG external interrupt configuration register				Address Offset = 0x08
+	__IO uint32_t CMPCR;			//Compensation cell control register (SYSCFG_CMPCR				Address Offset = 0x20
+
+}SYSCFG_Typedef_t;
+
+typedef struct{
+	__IO uint32_t IMR;				//Interrupt mask register (EXTI_IMR								Address Offset = 0x00
+	__IO uint32_t EMR;				//Event mask register (EXTI_EMR)								Address Offset = 0x04
+	__IO uint32_t RTSR;				//Rising trigger selection register (EXTI_RTSR					Address Offset = 0x08
+	__IO uint32_t FTSR;				//Falling trigger selection register (EXTI_FTSR					Address Offset = 0x0C
+	__IO uint32_t SWIER;			//Software interrupt event register (EXTI_SWIER					Address Offset = 0x10
+	__IO uint32_t PR;				//Pending register (EXTI_PR										Address Offset = 0x14
+
+
+
+}EXTI_Typedef_t;
+
+#define	EXTI_BASE_ADDR				(0x40013C00UL)
+#define EXTI			((EXTI_Typedef_t*)(EXTI_BASE_ADDR))
+
+#define SYSCFG			((SYSCFG_Typedef_t*)SYSCFG_BASE_ADRR)
+
 #define GPIOA			((GPIO_Typedef_t*)(GPIOA_BASE_ADDR))
 #define GPIOB			((GPIO_Typedef_t*)(GPIOB_BASE_ADDR))
 #define GPIOC			((GPIO_Typedef_t*)(GPIOC_BASE_ADDR))
@@ -165,6 +193,10 @@ typedef struct
 #define RCC_AHB1ENR_GPIOGEN_Pos			(6U)
 #define RCC_AHB1ENR_GPIOGEN_Msk			(0x1<<RCC_AHB1ENR_GPIOGEN_Pos)
 #define RCC_AHB1ENR_GPIOGEN				RCC_AHB1ENR_GPIOGEN_Msk
+
+#define RCC_APB2ENR_SYSCFGEN_Pos		(14U)
+#define RCC_APB2ENR_SYSCFGEN_Msk		(0x1U<<RCC_APB2ENR_SYSCFGEN_Pos)
+#define RCC_APB2ENR_SYSCFGEN			RCC_APB2ENR_SYSCFGEN_Msk
 
 
 #include "RCC.h"
