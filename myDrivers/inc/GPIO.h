@@ -60,6 +60,26 @@
 #define GPIO_SPEED_HIGH				(0X2U)
 #define GPIO_SPEED_VERY				(0X3U)
 
+/*
+ * @def_group GPIO_AF_Modes
+ */
+
+#define GPIO_AF0			(0x0U)
+#define GPIO_AF1			(0x1U)
+#define GPIO_AF2			(0x2U)
+#define GPIO_AF3			(0x3U)
+#define GPIO_AF4			(0x4U)
+#define GPIO_AF5			(0x5U)
+#define GPIO_AF6			(0x6U)
+#define GPIO_AF7			(0x7U)
+#define GPIO_AF8			(0x8U)
+#define GPIO_AF9			(0x9U)
+#define GPIO_AF10			(0xAU)
+#define GPIO_AF11			(0xBU)
+#define GPIO_AF12			(0xCU)
+#define GPIO_AF13			(0xDU)
+#define GPIO_AF14			(0xEU)
+#define GPIO_AF15			(0xFU)
 
 typedef struct{
 
@@ -68,7 +88,7 @@ typedef struct{
 	uint32_t Otype;			/*!>GPIO Pin Numbers @def_group GPIO_OTYPE_Modes */
 	uint32_t PuPd;			/*!>GPIO Pin Numbers @def_group GPIO_PUPD_Modes */
 	uint32_t Speed;			/*!>GPIO Pin Numbers @def_group GPIO_SPEED_Modes */
-	uint32_t Alternate;
+	uint32_t Alternate;		/*!>GPIO Pin Numbers @def_group GPIO_AF_Modes */
 
 
 }GPIO_Init_Typedef_t;

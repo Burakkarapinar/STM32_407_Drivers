@@ -42,9 +42,32 @@
 void EXTI_LineConfig(uint8_t PortSource, uint8_t EXTI_LineSource);
 
 
+/*
+ * @defgroup EXTI_Modes
+ */
+#define EXTI_MODE_Interrupt			(0x00U)
+#define EXTI_MODE_Event				(0x04U)
+
+/*
+ * @def_group EXTI_Trigger_Modes
+ */
+#define EXTI_Trigger_Rising			(0x08U)
+#define EXTI_Trigger_Falling		(0x0CU)
+#define EXTI_Trigger_RF				(0x10U)
 
 
 
+typedef struct{
+
+	uint8_t EXTI_LineNumber;			//EXTI Line number for valid GPIO pin @defgroup Line_Values
+	uint8_t TriggerSelection;			// EXTI Trigger Selection values @def_group EXTI_Trigger_Modes
+	uint8_t EXTI_Mode;					// EXTI Mode Value @defgroup EXTI_Modes
+	FunctionalState_t EXTI_LineCmd;		//Mask or Unmask the Line Number
+}EXTI_InitTypedef_t;
+
+
+void EXTI_Init(EXTI_InitTypedef_t *EXTI_InitStruct);
+void NVIC_EnableInterrupt(IRQNumber_Typedef_t IRQNumber);
 
 
 

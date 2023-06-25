@@ -5,6 +5,25 @@
 #include <stdint.h>
 #include <string.h>
 
+/*
+ * Microprocessor Defines
+ */
+
+#define NVIC_ISER0			((uint32_t*)(0xE000E100))
+
+
+
+/*
+ * IRQ Numbers of MCU ==Vector Table
+ */
+typedef enum{
+	EXTI0_IRQNumber = 6,
+	EXTI1_IRQNumber = 7,
+	EXTI2_IRQNumber = 8,
+	EXTI3_IRQNumber = 9,
+	SPI1_IRQNumber = 35
+
+}IRQNumber_Typedef_t;
 
 #define SET_BIT(REG,BIT)		((REG) |= 	(BIT))
 #define CLEAR_BIT(REG,BIT)		((REG) &=~ 	(BIT))
@@ -13,6 +32,12 @@
 /*
  * Memory Base Address
  */
+
+typedef enum{
+	DISABLE = 0x0U,
+	ENABLE =!DISABLE
+}FunctionalState_t;
+
 
 #define FLASH_BASE_ADDR				(0X08000000UL)	/* Flash Base Adress 1MB 	*/
 #define SRAM1_BASE_ADDR				(0x20000000UL)	/* SRAM1 Base Adress 112 KB	*/
@@ -65,7 +90,8 @@
 #define SPI4_BASE_ADRR				(APB2_BASE_ADDR+0X3400UL)
 
 #define SYSCFG_BASE_ADRR			(APB2_BASE_ADDR+0X3800UL)
-#define EXT1_BASE_ADRR				(APB2_BASE_ADDR+0X3C00UL)
+#define EXTI_BASE_ADRR				(APB2_BASE_ADDR+0X3C00UL)
+
 
 /*
  * AHB1 Peripherals Base Addresses
@@ -93,7 +119,7 @@ typedef struct{
 	__IO uint32_t ODR;
 	__IO uint32_t BSRR;
 	__IO uint32_t LCKR;
-	__IO uint32_t AFRL[2];
+	__IO uint32_t AFR[2];
 }GPIO_Typedef_t;
 
 
@@ -106,6 +132,12 @@ typedef struct{
 
 }SYSCFG_Typedef_t;
 
+typedef enum{
+	SPI_BUS_FREE = 0x0U,
+	SPI_BUS_BUSY_TX = 0x1U,
+	SPI_BUS_BUSY_RX = 0x2U
+}SPI_BusStatus_t;
+
 typedef struct{
 	__IO uint32_t IMR;				//Interrupt mask register (EXTI_IMR								Address Offset = 0x00
 	__IO uint32_t EMR;				//Event mask register (EXTI_EMR)								Address Offset = 0x04
@@ -114,14 +146,31 @@ typedef struct{
 	__IO uint32_t SWIER;			//Software interrupt event register (EXTI_SWIER					Address Offset = 0x10
 	__IO uint32_t PR;				//Pending register (EXTI_PR										Address Offset = 0x14
 
-
-
 }EXTI_Typedef_t;
 
-#define	EXTI_BASE_ADDR				(0x40013C00UL)
-#define EXTI			((EXTI_Typedef_t*)(EXTI_BASE_ADDR))
+typedef struct{
+	__IO uint32_t CR1;				//SPI control register 1 				Address offset: 0x00
+	__IO uint32_t CR2;				//SPI control register 1 				Address offset: 0x04
+	__IO uint32_t SR;				//SPI status register					Address offset: 0x08
+	__IO uint32_t DR;				//SPI data register						Address offset: 0x0C
+	__IO uint32_t CRCPR;			//SPI CRC polynomial register			Address offset: 0x10
+	__IO uint32_t RXCRCR;			//SPI RX CRC register					Address offset: 0x14
+	__IO uint32_t TXCRCR;			//SPI TX CRC register					Address offset: 0x18
+	__IO uint32_t I2SCFGR;			//SPI_I2S configuration register 		Address offset: 0x1C
+	__IO uint32_t I2SPR;			//SPI_I2S prescaler register			Address offset: 0x20
 
+}SPI_Typedef_t;
+
+
+#define SPI1			((SPI_Typedef_t*)(SPI1_BASE_ADRR))
+#define SPI2			((SPI_Typedef_t*)(SPI1_BASE_ADRR))
+#define SPI3			((SPI_Typedef_t*)(SPI1_BASE_ADRR))
+#define SPI4 			((SPI_Typedef_t*)(SPI1_BASE_ADRR))
+
+#define EXTI			((EXTI_Typedef_t*)(EXTI_BASE_ADRR))
 #define SYSCFG			((SYSCFG_Typedef_t*)SYSCFG_BASE_ADRR)
+
+
 
 #define GPIOA			((GPIO_Typedef_t*)(GPIOA_BASE_ADDR))
 #define GPIOB			((GPIO_Typedef_t*)(GPIOB_BASE_ADDR))
@@ -198,8 +247,43 @@ typedef struct
 #define RCC_APB2ENR_SYSCFGEN_Msk		(0x1U<<RCC_APB2ENR_SYSCFGEN_Pos)
 #define RCC_APB2ENR_SYSCFGEN			RCC_APB2ENR_SYSCFGEN_Msk
 
+#define RCC_APB2ENR_SPI1EN_Pos			(12U)
+#define RCC_APB2ENR_SPI1EN_Msk			(0x1U<<RCC_APB2ENR_SPI1EN_Pos)
+#define RCC_APB2ENR_SPI1EN				RCC_APB2ENR_SPI1EN_Msk
+
+#define RCC_APB2ENR_SPI4EN_Pos			(13U)
+#define RCC_APB2ENR_SPI4EN_Msk			(0x1U<<RCC_APB2ENR_SPI4EN_Pos)
+#define RCC_APB2ENR_SPI4EN				RCC_APB2ENR_SPI4EN_Msk
+
+
+#define RCC_APB1ENR_SPI2EN_Pos			(14U)
+#define RCC_APB1ENR_SPI2EN_Msk			(0x1U<<RCC_APB1ENR_SPI2EN_Pos)
+#define RCC_APB1ENR_SPI2EN				RCC_APB1ENR_SPI2EN_Msk
+
+
+#define RCC_APB1ENR_SPI3EN_Pos			(15U)
+#define RCC_APB1ENR_SPI3EN_Msk			(0x1U<<RCC_APB1ENR_SPI3EN_Pos)
+#define RCC_APB1ENR_SPI3EN				RCC_APB1ENR_SPI3EN_Msk
+
+#define SPI_CR1_SPE						(6U)
+#define SPI_CR1_DFF						(11U)
+#define SPI_SR_TxE						(1U)
+#define SPI_SR_Busy						(7U)
+#define SPI_SR_RxNE						(0U)
+#define SPI_CR2_TXEIE					(7U)
+/*
+ * Flag Definitions
+ */
+
+#define SPI_TxE_FLAG					((0x1) << SPI_SR_TxE)
+#define SPI_Busy_FLAG					((0x1) << SPI_SR_Busy)
+#define SPI_RxNE_FLAG					((0x1) << SPI_SR_RxNE)
+
+
 
 #include "RCC.h"
-
+#include "GPIO.h"
+#include "EXTI.h"
+#include "SPI.h"
 
 #endif /* INC_STM32F407XX_H_ */
