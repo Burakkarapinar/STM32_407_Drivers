@@ -21,7 +21,8 @@ typedef enum{
 	EXTI1_IRQNumber = 7,
 	EXTI2_IRQNumber = 8,
 	EXTI3_IRQNumber = 9,
-	SPI1_IRQNumber = 35
+	SPI1_IRQNumber = 35,
+	USART2_IRQNumber = 38
 
 }IRQNumber_Typedef_t;
 
@@ -48,7 +49,7 @@ typedef enum{
  */
 
 #define PERIPH_BASE_ADDR			(0X40000000UL)
-#define	APB1_BASE_ADDR				PERIPH_BASE_ADRR
+#define	APB1_BASE_ADDR				PERIPH_BASE_ADDR
 #define	APB2_BASE_ADDR				(PERIPH_BASE_ADDR+0x10000UL)
 #define	AHB1_BASE_ADDR				(PERIPH_BASE_ADDR+0x20000UL)
 #define	AHB2_BASE_ADDR				(PERIPH_BASE_ADRR+0x10000000UL)
@@ -69,6 +70,8 @@ typedef enum{
 
 #define	USART2_BASE_ADDR			(APB1_BASE_ADDR+0X4400UL)
 #define	USART3_BASE_ADDR			(APB1_BASE_ADDR+0X4800UL)
+#define UART4_BASE_ADDR				(APB1_BASE_ADDR+0X4C00UL)
+#define UART5_BASE_ADDR				(APB1_BASE_ADDR+0X5000UL)
 
 #define	I2C1_BASE_ADDR				(APB1_BASE_ADDR+0X5400UL)
 #define	I2C2_BASE_ADDR				(APB1_BASE_ADDR+0X5800UL)
@@ -110,6 +113,29 @@ typedef enum{
  */
 
 #define __IO volatile
+
+typedef struct{
+	__IO uint32_t SR;		/* USART Status register 							Address Offset = 0x00			*/
+	__IO uint32_t DR;		/* USART Data register 								Address Offset = 0x04			*/
+	__IO uint32_t BRR;		/* USART Baud rate register							Address Offset = 0x08			 */
+	__IO uint32_t CR1;		/* USART Control register 1 						Address Offset = 0x0C			*/
+	__IO uint32_t CR2;		/* USART Control register 2 						Address Offset = 0x10			*/
+	__IO uint32_t CR3;		/* USART Control register 3 						Address Offset = 0x14			*/
+	__IO uint32_t GTPR;		/* USART Guard time and prescaler register			Address Offset = 0x18			 */
+
+
+}USART_Typedef_t;
+
+#define 	USART2		((USART_Typedef_t*)(USART2_BASE_ADDR))
+#define 	USART3		((USART_Typedef_t*)(USART3_BASE_ADDR))
+#define 	UART4		((USART_Typedef_t*)(UART4_BASE_ADDR))
+#define 	UART5		((USART_Typedef_t*)(UART5_BASE_ADDR))
+
+#define 	USART1		((USART_Typedef_t*)(USART1_BASE_ADRR))
+#define 	USART6		((USART_Typedef_t*)(USART6_BASE_ADRR))
+
+#define USART_CR2_STOP	(12U)
+
 typedef struct{
 	__IO uint32_t MODER;
 	__IO uint32_t OTYPER;
@@ -265,12 +291,28 @@ typedef struct
 #define RCC_APB1ENR_SPI3EN_Msk			(0x1U<<RCC_APB1ENR_SPI3EN_Pos)
 #define RCC_APB1ENR_SPI3EN				RCC_APB1ENR_SPI3EN_Msk
 
+#define RCC_APB1ENR_USART2_Pos			(17U)
+#define RCC_APB1ENR_USART2_Msk			(0x1U << RCC_APB1ENR_USART2_Pos)
+#define RCC_APB1ENR_USART2EN			RCC_APB1ENR_USART2_Msk
+
+
+
 #define SPI_CR1_SPE						(6U)
 #define SPI_CR1_DFF						(11U)
 #define SPI_SR_TxE						(1U)
 #define SPI_SR_Busy						(7U)
 #define SPI_SR_RxNE						(0U)
 #define SPI_CR2_TXEIE					(7U)
+#define USART_SR_TxE					(7U)
+#define USART_SR_TC						(6U)
+#define	USART_SR_RxNe					(5U)
+
+#define USART_CR1_UE					(13U)
+#define UART_CR2_STOP					(12U)
+#define USART_CR1_RxNEIE				(5U)
+#define USART_CR1_TXEIE					(7U)
+
+
 /*
  * Flag Definitions
  */
@@ -279,11 +321,14 @@ typedef struct
 #define SPI_Busy_FLAG					((0x1) << SPI_SR_Busy)
 #define SPI_RxNE_FLAG					((0x1) << SPI_SR_RxNE)
 
+#define USART_TxE_Flag					((0x1) << USART_SR_TxE)
+#define USART_TC_Flag					((0x1) << USART_SR_TC)
+#define USART_RxNE_FLAG					((0x1) << USART_SR_RxNe)
 
 
 #include "RCC.h"
 #include "GPIO.h"
 #include "EXTI.h"
 #include "SPI.h"
-
+#include "USART.h"
 #endif /* INC_STM32F407XX_H_ */
